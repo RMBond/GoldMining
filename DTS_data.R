@@ -34,8 +34,11 @@ str(out)
 
 #3. Get DTS data into timestamp form rather then multiple columns
 dts_dt <- out  %>% 
-  mutate(tmestamp = make_datetime(year, month, day, hour, minute)) %>% 
-  select(long, long2, tmestamp, temp)
+  mutate(tmestamp = make_datetime(year, month, day, hour, minute), 
+         abv15_5 = ifelse(temp > 15.5,1,0),
+         abv17 = ifelse(temp > 17.0,1,0),
+         abv20 = ifelse(temp > 20,1,0)) %>% 
+  select(long, long2, tmestamp, temp,abv15_5, abv17, abv20)
 
 dts_hour <- out %>% 
   mutate(date = make_date(year, month, day)) %>% 
@@ -55,6 +58,45 @@ str(dts_dt)
   labs(x = "Distance downstream [m]", y = "Date") +
   scale_x_continuous(limits = c(1,850)) 
   #scale_y_date(date_labels = "%d")
+
+#1m pixels above 15.5*C
+plot15 <- ggplot(dts_dt, aes(long,tmestamp, fill = as.factor(abv15_5))) + 
+  geom_tile() +
+  theme_bw() +
+  labs(x = "Distance downstream [m]", y = "Date") +
+  scale_x_continuous(limits = c(1,850)) + 
+  #scale_fill_grey()
+  scale_fill_manual(values = c("gray","black"), 
+                    name = "",
+                    breaks = c(0, 1),
+                    labels = c("< 15.5", "> 15.5")) +
+  theme(legend.position = "top")
+
+#1m pixels above 17*C
+plot17 <- ggplot(dts_dt, aes(long,tmestamp, fill = as.factor(abv17))) + 
+  geom_tile() +
+  theme_bw() +
+  labs(x = "Distance downstream [m]", y = "Date") +
+  scale_x_continuous(limits = c(1,850)) + 
+  #scale_fill_grey()
+  scale_fill_manual(values = c("gray","black"), 
+                    name = "",
+                    breaks = c(0, 1),
+                    labels = c("< 17", "> 17")) +
+  theme(legend.position = "top")
+
+#1m pixels above 20*C
+plot20 <- ggplot(dts_dt, aes(long,tmestamp, fill = as.factor(abv20))) + 
+  geom_tile() +
+  theme_bw() +
+  labs(x = "Distance downstream [m]", y = "Date") +
+  scale_x_continuous(limits = c(1,850)) + 
+  #scale_fill_grey()
+  scale_fill_manual(values = c("gray","black"), 
+                    name = "",
+                    breaks = c(0, 1),
+                    labels = c("< 20", "> 20")) +
+  theme(legend.position = "top")
 
 # Hourly pixles 
 ggplot(dts_hour, aes(long,date, fill = meantemp)) + 
@@ -88,15 +130,15 @@ ggplot(meantemp, aes(timestamp, mtemp)) +
   labs(x = "Date", y = "Mean Temperature [*C]")
   
 
-# #Stacking multiple plots together
+#Stacking multiple plots together
 # multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 #   library(grid)
-#   
+# 
 #   # Make a list from the ... arguments and plotlist
 #   plots <- c(list(...), plotlist)
-#   
+# 
 #   numPlots = length(plots)
-#   
+# 
 #   # If layout is NULL, then use 'cols' to determine layout
 #   if (is.null(layout)) {
 #     # Make the panel
@@ -105,24 +147,24 @@ ggplot(meantemp, aes(timestamp, mtemp)) +
 #     layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
 #                      ncol = cols, nrow = ceiling(numPlots/cols))
 #   }
-#   
+# 
 #   if (numPlots==1) {
 #     print(plots[[1]])
-#     
+# 
 #   } else {
 #     # Set up the page
 #     grid.newpage()
 #     pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
-#     
+# 
 #     # Make each plot, in the correct location
 #     for (i in 1:numPlots) {
 #       # Get the i,j matrix positions of the regions that contain this subplot
 #       matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
-#       
+# 
 #       print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
 #                                       layout.pos.col = matchidx$col))
 #     }
 #   }
 # }
 # 
-# multiplot(dts_1m,temp_mean,1)
+# multiplot(plot15,plot17,plot20,1)

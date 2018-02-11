@@ -199,4 +199,3 @@ ggplot(meantemp, aes(timestamp, mtemp)) +
 # }
 # 
 # multiplot(plot15,plot17,plot20,1)
-

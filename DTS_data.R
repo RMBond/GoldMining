@@ -23,6 +23,8 @@ convert.magic <- function(obj,types){
 #2. Input data
 dts <- read.csv("DTS_2_Cleaned_up.csv")
 
+
+
 dtslong <- dts %>%
   gather(dt,temp,-long,-long2) %>%
   separate(dt,c("xmonth", "day", "year", "hour", "minute")) %>% 
@@ -52,17 +54,54 @@ str(dts_dt)
 
 texdat <- ymd_hm("2017-07-20 20:09") #used as y coordiantes for annotation label
 
+#Temperature color pallet
+#First load color.RData
+ocean.pal <- colors
+
+# #Reverse timestamp order for plot?
+# #https://stackoverflow.com/questions/43625341/reverse-datetime-posixct-data-axis-in-ggplot
+# c_trans <- function(a, b, breaks = b$breaks, format = b$format) {
+#   a <- as.trans(a)
+#   b <- as.trans(b)
+#   
+#   name <- paste(a$name, b$name, sep = "-")
+#   
+#   trans <- function(x) a$trans(b$trans(x))
+#   inv <- function(x) b$inverse(a$inverse(x))
+#   
+#   trans_new(name, trans, inverse = inv, breaks = breaks, format=format)
+#   
+# }
+# 
+# rev_date <- c_trans("reverse", "time")
+# 
+# ggplot(MyData, aes(x = Value, y = Date)) +
+#   geom_point() + 
+#   scale_y_continuous(trans = rev_date)
+
 ####Now make a heatmap in ggplot ####
 # 1m pixels (all data)
 dts_1m <- 
   ggplot(dts_dt, aes(long,tmestamp, fill = temp)) + 
   geom_tile() +
-  theme_bw() +
-  scale_fill_viridis() +
+  theme_classic() +
+  scale_fill_gradientn(colours = ocean.pal$thermal, limits = c(15, 23),
+                       name = "Temperature (\u00B0C)") +
+  # scale_fill_viridis() +
   labs(x = "Distance downstream [m]", y = "Date") +
-  scale_x_continuous(limits = c(1,850)) +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
-  #scale_y_date(date_labels = "%d")
+  scale_x_continuous(limits = c(1,850), expand = c(0,0)) +
+  # scale_y_continuous(trans = rev_date) +
+  scale_y_datetime(expand = c(0,0)) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  theme(axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.position = "top",
+        legend.box = "horizontal",
+        legend.key.height = unit(.4,"cm")) +
+  guides(fill = guide_colourbar(title.position = "top", title.hjust = 0.5)) +
+  ggtitle("A") 
+
+# ggsave("Figures and Tables/DTSfig_20210208.png", width = 5, height = 6, units = "in", dpi = 650, device = "png")
 
 #1m pixels above 15.5*C
 plot15 <- ggplot(dts_dt, aes(long,tmestamp, fill = as.factor(abv15_5))) + 

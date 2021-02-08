@@ -60,7 +60,8 @@ dts_1m <-
   theme_bw() +
   scale_fill_viridis() +
   labs(x = "Distance downstream [m]", y = "Date") +
-  scale_x_continuous(limits = c(1,850)) 
+  scale_x_continuous(limits = c(1,850)) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
   #scale_y_date(date_labels = "%d")
 
 #1m pixels above 15.5*C
@@ -70,7 +71,7 @@ plot15 <- ggplot(dts_dt, aes(long,tmestamp, fill = as.factor(abv15_5))) +
   labs(x = "Distance downstream [m]", y = "Date") +
   scale_x_continuous(limits = c(1,850)) + 
   theme(legend.position = "none") +
-  scale_fill_manual(values = c("gray","black")) #, 
+  scale_fill_manual(values = c("gray","black")) +#, 
   #                   name = "",
   #                   breaks = c(0, 1),
   #                   labels = c(expression(paste("< 15.5",degree,"C")), 
@@ -78,6 +79,7 @@ plot15 <- ggplot(dts_dt, aes(long,tmestamp, fill = as.factor(abv15_5))) +
   # theme(legend.position = "top") +
   #   annotate("text", label = expression(paste("> 15.5", degree,"C")), #annotation does not work
   #            x = 750, y = texdat, cex = 3, color = "white")
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
 #1m pixels above 17*C
 plot17 <- ggplot(dts_dt, aes(long,tmestamp, fill = as.factor(abv17))) + 
@@ -102,12 +104,13 @@ plot20 <- ggplot(dts_dt, aes(long,tmestamp, fill = as.factor(abv20))) +
   #labs(x = "Distance downstream [m]", y = "Date") +
   scale_x_continuous(limits = c(1,850)) + 
   theme(legend.position = "none") +
-  scale_fill_manual(values = c("gray","black")) #, 
+  scale_fill_manual(values = c("gray","black")) + #, 
   #                   name = "",
   #                   breaks = c(0, 1),
   #                   labels = c(expression(paste("< 20.0",degree,"C")), 
   #                              expression(paste("> 20.0",degree,"C")))) +
   # theme(legend.position = "top")
+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
 #1m pixels above 22*C
 plot22 <- ggplot(dts_dt, aes(long,tmestamp, fill = as.factor(abv22))) + 
@@ -117,16 +120,16 @@ plot22 <- ggplot(dts_dt, aes(long,tmestamp, fill = as.factor(abv22))) +
   theme(legend.position = "none") + 
   #labs(x = "Distance downstream [m]", y = "Date") +
   scale_x_continuous(limits = c(1,850)) + 
-  scale_fill_manual(values = c("gray","black")) #, 
+  scale_fill_manual(values = c("gray","black")) +#, 
   #                   name = "",
   #                   breaks = c(0, 1),
   #                   labels = c(expression(paste("< 22.0",degree,"C")),
   #                              expression(paste("> 22.0",degree,"C")))) +
   # theme(legend.position = "top")
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
   ####Muliple temp threshold plots together ####
-  
-  grid.arrange(plot15,plot17,plot20, plot22, nrow = 2)
+grid.arrange(plot15,plot17,plot20, plot22, nrow = 2)
   
   
 #### Hourly pixles ####
